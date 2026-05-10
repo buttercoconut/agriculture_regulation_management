@@ -1,0 +1,4 @@
+# Minimal frontend dependencies
+vue@3.4.27
+vue-router@4.3.3
+axios@1.7.2
