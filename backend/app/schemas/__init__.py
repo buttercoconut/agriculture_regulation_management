@@ -1,1 +1,1 @@
-# Empty __init__ for schemas package
+# schemas package

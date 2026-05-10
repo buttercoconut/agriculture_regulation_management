@@ -1,14 +1,22 @@
-# Minimal database setup for async SQLAlchemy
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
+# database connection
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from .models.base import Base
 import os
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://user:password@localhost:5432/agri_db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-engine = create_async_engine(DATABASE_URL, echo=True)
-async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-Base = declarative_base()
+def init_db():
+    Base.metadata.create_all(bind=engine)
 
-async def get_db() -> AsyncSession:
-    async with async_session() as session:
-        yield session
+# Dependency
+from fastapi import Depends
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

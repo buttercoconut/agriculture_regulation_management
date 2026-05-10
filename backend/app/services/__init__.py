@@ -1,1 +1,1 @@
-# Empty __init__ for services package
+from . import regulation_service, notification_service

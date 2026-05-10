@@ -1,12 +1,14 @@
+# main application
 from fastapi import FastAPI
-from .routes import regulation, notification
+from .routes import regulation
+from .database import init_db
 
 app = FastAPI(title="Agriculture Regulation Management API")
 
-app.include_router(regulation.router, prefix="/regulations", tags=["Regulations"])
-app.include_router(notification.router, prefix="/notifications", tags=["Notifications"])
+@app.on_event("startup")
+async def startup_event():
+    init_db()
 
-# Health check
-@app.get("/health")
-async def health_check():
-    return {"status": "ok"}
+app.include_router(regulation.router)
+
+# Additional routers can be included here
